@@ -1,0 +1,17 @@
+{
+  "setting_name": "token_cossim_0.98",
+  "spec": {
+    "name": "token_cossim",
+    "threshold": 0.98
+  },
+  "n_samples": 100,
+  "n_correct": 81,
+  "accuracy": 81.0,
+  "avg_steps": 315.65,
+  "avg_tokens": 325.38,
+  "avg_reused_per_sample": 264802.6,
+  "total_reused": 26480260,
+  "total_decisions": 854196,
+  "reuse_rate": 0.9687567314761484,
+  "elapsed_seconds": 2519.207610845566
+}

@@ -1,0 +1,11 @@
+{
+  "setting_name": "layer_cossim_avg_0.97",
+  "n_samples": 100,
+  "n_correct": 27,
+  "accuracy": 27.0,
+  "avg_steps": 370.83,
+  "avg_tokens": 382.73,
+  "total_reused": 28513824,
+  "total_decisions": 1003716,
+  "reuse_rate": 0.887758090934089
+}

@@ -1,0 +1,17 @@
+{
+  "setting_name": "token_topk_25",
+  "spec": {
+    "name": "token_topk",
+    "k": 25
+  },
+  "n_samples": 100,
+  "n_correct": 82,
+  "accuracy": 82.0,
+  "avg_steps": 306.66,
+  "avg_tokens": 316.07,
+  "avg_reused_per_sample": 195402.53,
+  "total_reused": 19540253,
+  "total_decisions": 829836,
+  "reuse_rate": 0.7358476930983954,
+  "elapsed_seconds": 2817.257792711258
+}

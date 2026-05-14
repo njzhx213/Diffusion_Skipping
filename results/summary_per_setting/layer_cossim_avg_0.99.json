@@ -1,0 +1,18 @@
+{
+  "setting_name": "layer_cossim_avg_0.99",
+  "spec": {
+    "name": "layer_cossim",
+    "threshold": 0.99,
+    "agg": "avg"
+  },
+  "n_samples": 100,
+  "n_correct": 75,
+  "accuracy": 75.0,
+  "avg_steps": 307.28,
+  "avg_tokens": 316.73,
+  "avg_reused_per_sample": 64763.52,
+  "total_reused": 6476352,
+  "total_decisions": 831516,
+  "reuse_rate": 0.2433939936212893,
+  "elapsed_seconds": 2066.3204679489136
+}
