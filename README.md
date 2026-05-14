@@ -141,7 +141,7 @@ If you use this code or findings, please cite:
 
 ```bibtex
 @misc{fastdllm-skipping-2026,
-  author = {njzhx213},
+  author = {Haoxiong Zhang},
   title  = {Fast-dLLM v2 Compute-Skipping Experiments},
   year   = {2026},
   url    = {https://github.com/njzhx213/Diffusion_Skipping}
