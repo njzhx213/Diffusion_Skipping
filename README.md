@@ -29,6 +29,16 @@ huggingface-cli download Efficient-Large-Model/Fast_dLLM_v2_7B \
 
 Update the `MODEL_PATH` constant at the top of the driver scripts to point to your local model directory.
 
+**Apply the Phase A modeling patch** (required only for the 1c-ii attention weight histogram plot; not needed for Phase B):
+
+```bash
+cd /path/to/Fast_dLLM_v2_7B
+cp modeling.py modeling.py.bak
+patch modeling.py < /path/to/this/repo/src/modeling.patch
+```
+
+This adds a `_compute_attention_stats()` method to the attention module that records pre-RoPE attention weights for the Phase A histogram. Without an attached stats collector, the patch is a no-op (zero runtime overhead).
+
 ## Reproducing results
 
 ### Phase A: motivation figures

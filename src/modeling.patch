@@ -1,0 +1,39 @@
+--- modeling.py.bak	2026-05-13 03:57:34.710671323 -0400
++++ modeling.py	2026-05-13 03:57:46.342671621 -0400
+@@ -173,6 +173,26 @@
+         self.o_proj = nn.Linear(config.num_attention_heads * self.head_dim, config.hidden_size, bias=False)
+         self.sliding_window = config.sliding_window if config.layer_types[layer_idx] == "sliding_attention" else None
+ 
++
++    def _compute_attention_stats(self, query_states, key_states, value_states):
++        """
++        Per task spec for 1c-ii motivation plot.
++        Computes attn_weights = exp(qk^T * scaling) without applying RoPE.
++        Feeds the histogram collector attached to this module.
++        """
++        # Handle GQA
++        if query_states.size(1) != key_states.size(1):
++            key_states = repeat_kv(key_states, self.num_key_value_groups)
++            value_states = repeat_kv(value_states, self.num_key_value_groups)
++        
++        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3))
++        attn_weights = torch.exp(attn_weights.float() * self.scaling)
++        
++        # Feed collector (must be attached externally)
++        if hasattr(self, 'stats_collector') and self.stats_collector is not None:
++            if getattr(self.stats_collector, 'enabled', False):
++                self.stats_collector.record(self.layer_idx, attn_weights)
++
+     def forward(
+         self,
+         hidden_states: torch.Tensor,
+@@ -192,6 +212,9 @@
+         key_states = self.k_proj(hidden_states).view(hidden_shape).transpose(1, 2)
+         value_states = self.v_proj(hidden_states).view(hidden_shape).transpose(1, 2)
+ 
++        # 1c-ii motivation: compute pre-RoPE attention weight stats (no-op unless collector enabled)
++        self._compute_attention_stats(query_states, key_states, value_states)
++
+         cos, sin = position_embeddings
+         # query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
+         if self.training:
