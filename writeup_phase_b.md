@@ -78,7 +78,17 @@ Unlike threshold-based policies, TopK is immune to the self-reinforcing loop bec
 
 The `token_topk_50` result is striking: a 5-point absolute accuracy gain over baseline while halving the attention/MLP compute. One plausible explanation is **implicit regularization**: forcing reuse on stable tokens may reduce noise in the diffusion sampling without losing the information needed for inference. We caution that with 100 samples, the 95% confidence interval on accuracy is approximately ±9 percentage points, so the 5-point absolute gain is suggestive rather than statistically conclusive at this scale; what is more robust is that `token_topk_50` does **not** degrade accuracy while reducing attention+MLP FLOPs by nearly half. This is the most practically useful setting from our sweep.
 
-## 4. Limitations & Future Work
+## 4. Effect of `small_block_size` and `use_block_cache`
+
+We use the default Fast-dLLM v2 configuration of `small_block_size=8` and `use_block_cache=True` throughout. Both interact non-trivially with our skipping implementation.
+
+**`small_block_size=8`** divides each 32-token block into 4 attention sub-windows during the model's internal computation. Our skip mask, however, is computed at full-block granularity (shape `[B, 32]`) and applied to the assembled attention/MLP module outputs *after* the sub-window computation has finished. We therefore cannot selectively skip individual sub-windows — the finest decision granularity exposed to our hooks is per-token, which matches the spec's per-token / per-layer policy taxonomy but precludes a hypothetical "per-sub-window" policy. Practically, this means our hook-based design is agnostic to `small_block_size` for correctness, but a future refinement of layer-level max aggregation (see §3.3) would benefit from sub-window-level mask granularity — for which `small_block_size` provides a natural window size of 8 tokens.
+
+**`use_block_cache=True`** causes the model to flush its internal KV cache at every block boundary, recomputing attention from scratch for the new block. We mirror this in `start_new_block()`, which clears `prev_attn_out_cache` and `prev_mlp_out_cache`, ensuring no skip decision references a stale cache from a different block. This is what makes spec 3.a (no skip on the first step of a new block) both necessary and sufficient: without a fresh cache seeded by the first step's real computation, downstream skips at steps 2, 3, ... would have no valid tensor to substitute in. If `use_block_cache` were `False`, our skip caches could in principle persist across block boundaries and spec 3.a would no longer be strictly required — though the model's convergence dynamics would also change, and we have not tested this regime.
+
+In summary, the two parameters define the *granularity boundaries* within which our skipping operates: `small_block_size` bounds the spatial granularity from below (we cannot go finer than per-token within a block), and `use_block_cache` bounds the temporal scope (we cannot reuse across block boundaries). Our implementation respects both naturally, with no special-case code beyond `start_new_block()`.
+
+## 5. Limitations & Future Work
 
 **Self-reinforcing.** As discussed in §3.1, threshold-based token-level reuse degenerates because the decision input is contaminated by past reuse. A clean fix is to maintain a parallel "vanilla forward" path (~2× compute during decision) to compare against, then drop the parallel path at inference time once thresholds are calibrated.
 
