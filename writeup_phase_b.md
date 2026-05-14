@@ -67,7 +67,7 @@ The 0.995 threshold is a **sweet spot**: it slightly *improves* accuracy over th
 
 All five `layer_cossim_max` thresholds (0.97 through 0.999) collapse to the same degenerate behavior: **100% reuse rate, 0% accuracy**. With 32 tokens per block, `max(sim)` is almost surely ≈ 1.0 (one stable token suffices), so every threshold ≤ 1.0 triggers a whole-layer skip on every step after the first. The model effectively never recomputes—the output is garbage.
 
-This is a fundamental limitation of the spec-defined max-aggregation rule at large block size, not a bug in our implementation. Future work could mitigate by computing max over a sub-block (e.g., 4-token windows) or by combining max with a "min reuse fraction" guard.
+This is a fundamental limitation of the spec-defined max-aggregation criterion (spec 2.b) when combined with Fast-dLLM v2's default `block_size=32`, not a bug in our implementation. Future work could mitigate by computing max over a sub-block (e.g., 4-token windows) or by combining max with a "min reuse fraction" guard.
 
 ### 3.4 Token-TopK is the practical winner
 
