@@ -37,6 +37,26 @@ cp modeling.py modeling.py.bak
 patch modeling.py < /path/to/this/repo/src/modeling.patch
 ```
 
+This adds a `_compute_attention_stats()` method (~23 lines) to the attention module that records pre-RoPE attention weights for the Phase A histogram. Without an attached stats collector, the patch is a no-op (zero runtime overhead).
+
+**Apply the Phase A modeling patch** (required only for the 1c-ii attention weight histogram plot; not needed for Phase B):
+
+```bash
+cd /path/to/Fast_dLLM_v2_7B
+cp modeling.py modeling.py.bak
+patch modeling.py < /path/to/this/repo/src/modeling.patch
+```
+
+This adds a `_compute_attention_stats()` method (~23 lines) to the attention module that records pre-RoPE attention weights for the Phase A histogram. Without an attached stats collector, the patch is a no-op (zero runtime overhead).
+
+**Apply the Phase A modeling patch** (required only for the 1c-ii attention weight histogram plot; not needed for Phase B):
+
+```bash
+cd /path/to/Fast_dLLM_v2_7B
+cp modeling.py modeling.py.bak
+patch modeling.py < /path/to/this/repo/src/modeling.patch
+```
+
 This adds a `_compute_attention_stats()` method to the attention module that records pre-RoPE attention weights for the Phase A histogram. Without an attached stats collector, the patch is a no-op (zero runtime overhead).
 
 ## Reproducing results
@@ -121,9 +141,9 @@ If you use this code or findings, please cite:
 
 ```bibtex
 @misc{fastdllm-skipping-2026,
-  author = {Your Name},
+  author = {njzhx213},
   title  = {Fast-dLLM v2 Compute-Skipping Experiments},
   year   = {2026},
-  url    = {https://github.com/your-username/fastdllm-skipping}
+  url    = {https://github.com/njzhx213/Diffusion_Skipping}
 }
 ```
